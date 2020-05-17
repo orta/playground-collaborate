@@ -7,3 +7,4 @@ scripts
 yarn*
 tsconfig.json
 rollup*
+server

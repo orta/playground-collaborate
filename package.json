@@ -28,6 +28,7 @@
     "typescript": "latest"
   },
   "dependencies": {
+    "@aspnet/signalr": "^1.1.4",
     "tslib": "^1.10.0"
   }
 }
