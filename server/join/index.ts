@@ -1,6 +1,6 @@
 import { AzureFunction, Context, HttpRequest } from "@azure/functions";
 
-const httpTrigger: AzureFunction = async function (context: Context, req: HttpRequest): Promise<void> {
+const httpTrigger: AzureFunction = async function (context: Context, req: HttpRequest) {
   const group = req.body.group
   
   let userId = ""
@@ -8,11 +8,11 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
     userId = req.headers['x-ms-client-principal-id'];
   }
 
-  context.bindings.signalRGroupActions = [{
+  return {
     userId,
     groupName: group,
     action: "add",
-  }];
+  };
 };
 
 export default httpTrigger;

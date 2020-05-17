@@ -2,9 +2,9 @@ import type { PlaygroundPlugin, PluginUtils } from "./vendor/playground";
 import { HubConnectionBuilder, LogLevel, HubConnection } from "@aspnet/signalr";
 import { addCollabCSS } from "./css";
 import { handleSetupScreen } from "./setupScreen";
-import { showRoomStatus } from "./inCollab";
+import { showRoomStatus } from "./inRoom";
 import { AccessResponse } from "./types";
-import { startSyncing } from "./sync";
+import { startSyncing as startSyncingUp } from "./syncUp";
 
 const devBaseFunctionsURL = "http://localhost:7071";
 const prodFunctionsURL = "https://playgroundcollab.azurewebsites.net";
@@ -18,10 +18,14 @@ const makePlugin = (utils: PluginUtils) => {
   let isHost = true;
   let isLoggedIn = false;
   let myID = "";
+  let myName = "";
 
   const makeConnection = () => {
     if (connection) return connection;
-    connection = new HubConnectionBuilder().withUrl(`${baseURL}/api`).configureLogging(LogLevel.Information).build();
+    connection = new HubConnectionBuilder().withUrl(`${baseURL}/api`).configureLogging(LogLevel.Debug).build();
+    // @ts-ignore
+    window.connection = connection
+    connection.onclose(() => console.log("disconnected"));
 
     connection
       .start()
@@ -29,8 +33,6 @@ const makePlugin = (utils: PluginUtils) => {
         connected = true;
       })
       .catch(console.error);
-
-    connection.onclose(() => console.log("disconnected"));
     return connection;
   };
 
@@ -40,9 +42,10 @@ const makePlugin = (utils: PluginUtils) => {
       if (!response.ok) return undefined;
 
       const users: AccessResponse[] = await response.json();
-      myID = users[0].user_claims.find(
-        (c) => c.typ === "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
-      ).val;
+      // prettier-ignore
+      myID = users[0].user_claims.find((c) => c.typ === "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier").val;
+      myName = users[0].user_claims.find((c) => c.typ === "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name").val;
+
       isLoggedIn = true;
       return users[0];
     } catch (error) {
@@ -50,7 +53,6 @@ const makePlugin = (utils: PluginUtils) => {
       return undefined;
     }
   };
-
 
   const customPlugin: PlaygroundPlugin = {
     id: "collab",
@@ -61,6 +63,7 @@ const makePlugin = (utils: PluginUtils) => {
     },
 
     didMount: (sandbox, _container) => {
+      makeConnection()
       container = _container;
       addCollabCSS();
 
@@ -71,13 +74,9 @@ const makePlugin = (utils: PluginUtils) => {
       const didJoinRoom = (room: string) => {
         const connection = makeConnection()
     
-        connection.on("newMessage", (msg) => {
-          console.log(msg);
-        });
+        startSyncingUp({ baseURL, room, sandbox, sender: myID }, connection);
     
-        startSyncing({ baseURL, room, sandbox });
-    
-        const roomInfoContainerDiv = showRoomStatus({ baseURL, room, connection }, utils);
+        const roomInfoContainerDiv = showRoomStatus({ baseURL, room, connection, sandbox, myName }, utils);
         container.appendChild(roomInfoContainerDiv!);
       };
 
