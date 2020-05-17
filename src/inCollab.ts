@@ -11,7 +11,7 @@ export const showRoomStatus = (
   const shareLink = `${window.location.href}?join-room=${config.room}&install-plugin=playground-collaborate`
   ds.subtitle(`Room: <code>${config.room}</code> - <a href='${shareLink}'>invite</a>`);
 
-  config.connection.on("update", (msg) => {
+  config.connection.on("newMessage", (msg) => {
     console.log(msg);
   });
 

@@ -71,7 +71,7 @@ const makePlugin = (utils: PluginUtils) => {
       const didJoinRoom = (room: string) => {
         const connection = makeConnection()
     
-        connection.on("update", (msg) => {
+        connection.on("newMessage", (msg) => {
           console.log(msg);
         });
     
