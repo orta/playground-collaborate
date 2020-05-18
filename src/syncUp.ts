@@ -5,17 +5,30 @@ import { HubConnection } from "@aspnet/signalr";
 
 export type SyncState = {
   group: string,
+  /** User name of who sent it  */
   sender: string,
+  /** Monaco selection state */
   selection: {
     startLine: number,
     startCol: number,
     endLine: number,
     endCol: number
   }
+  /** Used to determine who asked for permission last  */
+  lastRequestedWriteAccessTime: null | string
+  /** Text of TS/JS  */
+  text: null | string,
+  /** Date.now for when the last message was sent  */
+  lastSent: string
 }
 
 let timer: NodeJS.Timer = undefined
 let lastSentResponse = {}
+
+/** A global which others can mess with to set sync state info */
+export let userSyncInfo = {
+  lastRequestedWriteAccessTime: null
+}
 
 export const startSyncing = (config: { baseURL: string, room: string, sender: string, sandbox: Sandbox }, connection: HubConnection) => {
   timer = setInterval(() => {
@@ -29,7 +42,10 @@ export const startSyncing = (config: { baseURL: string, room: string, sender: st
           startCol: selection.startColumn,
           endLine: selection.endLineNumber,
           endCol: selection.endColumn
-        }
+        },
+        lastRequestedWriteAccessTime: userSyncInfo.lastRequestedWriteAccessTime,
+        text: userSyncInfo.lastRequestedWriteAccessTime && config.sandbox.getText(),
+        lastSent: new Date().toISOString()
       }
       
       if (lastSentResponse === body) return
