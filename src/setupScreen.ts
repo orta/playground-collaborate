@@ -30,9 +30,9 @@ export const handleSetupScreen = (
       };
       contentContainer.appendChild(button);
 
-      ds.p(
-        "Note: We do not handle any login credentials, they live in your cookies, and it's only used for group management as an arbitrary ID. Note: This will send you to a Microsoft OAuth, but there is a GitHub option in there (under 'Sign-in options')."
-      );
+      ds.p("Note: We do not store any login credentials, they live in your cookies, and it's only used for group management as an arbitrary ID.");
+      ds.p("Note: Clicking login will send you to a Microsoft OAuth, but there is a GitHub option hidden under 'Sign-in options'.")
+
     } else {
       const myName = response.user_id;
       const redir = encodeURIComponent(window.location.href)
