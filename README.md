@@ -1,6 +1,8 @@
 ## TypeScript Playground Collaborate
 
-Like LiveShare for the Playground, but no-where near as awesome.
+[Like LiveShare](https://visualstudio.microsoft.com/services/live-share/) for the Playground, but no-where near as polished and awesome.
+
+You can create collaboration rooms where one person at a time can edit, and everyone else can use all the Playground inspection tools in read-only mode.
 
 <img src="./images/playground-collab.gif" />
 
@@ -15,6 +17,12 @@ or
 - Install through the list
 
 Then it will show up as a tab in the sidebar.
+
+## TODO
+
+- Sync compiler option
+- Use SignalR groups properly (today it sends messages to all users, and users filter things which are interesting)
+- UI polish
 
 ## Contributing
 
