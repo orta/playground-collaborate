@@ -17,7 +17,7 @@
     {
       "type": "signalR",
       "userId": "{headers.x-ms-client-principal-name}",
-      "name": "signalRGroupActions",
+      "name": "$return",
       "hubName": "chat",
       "direction": "out"
   }

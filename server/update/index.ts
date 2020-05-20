@@ -8,7 +8,7 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
   }
 
   return {
-    // groupName: req.body.group,
+    groupName: req.body.group,
     target: "newMessage",
     arguments: [message],
   };
