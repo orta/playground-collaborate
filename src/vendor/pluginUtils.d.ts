@@ -31,10 +31,15 @@ export declare const createUtils: (sb: any, react: typeof React) => {
             isEnabled?: ((input: HTMLInputElement) => boolean) | undefined;
         }) => HTMLFormElement;
         createASTTree: (node: import("typescript").Node) => HTMLDivElement;
+        button: (settings: {
+            label: string;
+            onclick?: ((ev: MouseEvent) => void) | undefined;
+        }) => HTMLInputElement;
+        createTabBar: () => HTMLDivElement;
+        createTabButton: (text: string) => HTMLButtonElement;
+        declareRestartRequired: (i?: ((key: string) => string) | undefined) => void;
     };
     /** Flashes a HTML Element */
     flashHTMLElement: (element: HTMLElement) => void;
-    /** A general "restart your browser" message  */
-    declareRestartRequired: (i: (key: string) => string) => void;
 };
 export declare type PluginUtils = ReturnType<typeof createUtils>;

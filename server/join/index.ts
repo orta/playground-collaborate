@@ -10,7 +10,6 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
 
   return {
     userId,
-    groupName: group,
     action: "add",
   };
 };

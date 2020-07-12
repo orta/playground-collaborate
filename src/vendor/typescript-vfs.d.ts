@@ -1,16 +1,16 @@
 
-declare type System = import('typescript').System;
-declare type CompilerOptions = import('typescript').CompilerOptions;
-declare type LanguageServiceHost = import('typescript').LanguageServiceHost;
-declare type CompilerHost = import('typescript').CompilerHost;
-declare type SourceFile = import('typescript').SourceFile;
-declare type TS = typeof import('typescript');
+declare type System = import("typescript").System;
+declare type CompilerOptions = import("typescript").CompilerOptions;
+declare type LanguageServiceHost = import("typescript").LanguageServiceHost;
+declare type CompilerHost = import("typescript").CompilerHost;
+declare type SourceFile = import("typescript").SourceFile;
+declare type TS = typeof import("typescript");
 export interface VirtualTypeScriptEnvironment {
     sys: System;
-    languageService: import('typescript').LanguageService;
-    getSourceFile: (fileName: string) => import('typescript').SourceFile | undefined;
+    languageService: import("typescript").LanguageService;
+    getSourceFile: (fileName: string) => import("typescript").SourceFile | undefined;
     createFile: (fileName: string, content: string) => void;
-    updateFile: (fileName: string, content: string, replaceTextSpan?: import('typescript').TextSpan) => void;
+    updateFile: (fileName: string, content: string, replaceTextSpan?: import("typescript").TextSpan) => void;
 }
 /**
  * Makes a virtual copy of the TypeScript environment. This is the main API you want to be using with
@@ -35,6 +35,12 @@ export declare const knownLibFilesForCompilerOptions: (compilerOptions: Compiler
  * the local copy of typescript via the file system.
  */
 export declare const createDefaultMapFromNodeModules: (compilerOptions: CompilerOptions) => Map<string, string>;
+/**
+ * Adds recursively files from the FS into the map based on the folder
+ */
+export declare const addAllFilesFromFolder: (map: Map<string, string>, workingDir: string) => void;
+/** Adds all files from node_modules/@types into the FS Map */
+export declare const addFilesForTypesIntoFolder: (map: Map<string, string>) => void;
 /**
  * Create a virtual FS Map with the lib files from a particular TypeScript
  * version based on the target, Always includes dom ATM.
@@ -67,6 +73,6 @@ export declare function createVirtualCompilerHost(sys: System, compilerOptions: 
  */
 export declare function createVirtualLanguageServiceHost(sys: System, rootFiles: string[], compilerOptions: CompilerOptions, ts: TS): {
     languageServiceHost: LanguageServiceHost;
-    updateFile: (sourceFile: import('typescript').SourceFile) => void;
+    updateFile: (sourceFile: import("typescript").SourceFile) => void;
 };
 export {};

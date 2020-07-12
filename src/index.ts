@@ -1,9 +1,7 @@
 import type { PlaygroundPlugin, PluginUtils } from "./vendor/playground";
 import { HubConnectionBuilder, LogLevel, HubConnection } from "@aspnet/signalr";
 import { addCollabCSS } from "./css";
-import { handleSetupScreen } from "./setupScreen";
 import { showRoomStatus } from "./inRoom";
-import { AccessResponse } from "./types";
 import { startSyncing as startSyncingUp } from "./syncUp";
 
 const devBaseFunctionsURL = "http://localhost:7071";
@@ -13,8 +11,11 @@ const baseURL = prodFunctionsURL; // devBaseFunctionsURL
 const makePlugin = (utils: PluginUtils) => {
   let connection: HubConnection;
   let container: HTMLDivElement;
-  let myID = "";
-  let myName = "";
+  let myName = localStorage.getItem("playground-input-collab-username");
+
+  const query = new URLSearchParams(document.location.search || "");
+  const roomFromQuery = query.get("join-room");
+  let room = roomFromQuery || localStorage.getItem("playground-input-collab-room");
 
   const makeConnection = () => {
     if (connection) return connection;
@@ -29,24 +30,6 @@ const makePlugin = (utils: PluginUtils) => {
     return connection;
   };
 
-  /** Ask MS OAuth if you're logged in */
-  const getAuthDeets = async (): Promise<any | undefined> => {
-    try {
-      const response = await fetch(`${baseURL}/.auth/me`, { method: "POST", credentials: "include" });
-      if (!response.ok) return undefined;
-
-      const users: AccessResponse[] = await response.json();
-      // prettier-ignore
-      myID = users[0].user_claims.find((c) => c.typ === "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier").val;
-      myName = users[0].user_claims.find((c) => c.typ === "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name").val;
-
-      return users[0];
-    } catch (error) {
-      console.log("Collab: not logged in");
-      return undefined;
-    }
-  };
-
   const customPlugin: PlaygroundPlugin = {
     id: "collab",
     displayName: "Collab",
@@ -56,25 +39,63 @@ const makePlugin = (utils: PluginUtils) => {
     },
 
     didMount: (sandbox, _container) => {
-      makeConnection()
       container = _container;
       addCollabCSS();
 
       const app = utils.createDesignSystem(container);
       app.title("Playground Collaborate");
 
+      const loginCreds = document.createElement("div")
+      container.appendChild(loginCreds)
+      const loginDS  = utils.createDesignSystem(loginCreds);
 
-      const didJoinRoom = (room: string) => {
+      loginDS.subtitle("Your handle")
+      loginDS.createTextInput({ 
+        id: "collab-username", 
+        keepValueAcrossReloads: true,
+        placeholder: "Your handle...",
+        onEnter: () => {
+          myName 
+        },
+        onChanged:(text) => {
+          myName = text
+        }
+      })
+
+      loginDS.subtitle("Room")
+      loginDS.createTextInput({ 
+        id: "collab-room", 
+        keepValueAcrossReloads: true,
+        placeholder: "Room",
+        value: room,
+        onEnter: () => "",
+        onChanged:(text) => {
+          room = text
+        }
+      })
+
+
+      const br = document.createElement("br")
+      loginCreds.appendChild(br)
+
+      const roomContainer = document.createElement("div")
+
+      loginDS.button({ label: "Connect to server ", onclick: (event) => {
+        const button = event.target as HTMLButtonElement
+        button.disabled = true
+        button.textContent = "Connecting..."
+
         const connection = makeConnection()
-    
-        startSyncingUp({ baseURL, room, sandbox, sender: myID }, connection);
-    
-        const roomInfoContainerDiv = showRoomStatus({ baseURL, room, connection, sandbox, myName }, utils);
-        container.appendChild(roomInfoContainerDiv!);
-      };
+        startSyncingUp({ baseURL, room, sandbox, sender: myName }, connection);
 
-      const setupContainerDiv = handleSetupScreen({ baseURL, setup: getAuthDeets, didJoinRoom }, utils);
-      container.appendChild(setupContainerDiv!);
+        showRoomStatus({ container: roomContainer, baseURL, room, connection, myName: myName, sandbox}, utils)
+        loginDS.clear()
+      }})
+
+      container.appendChild(roomContainer)
+
+      loginDS.p("Playground Collaboratre adds support for letting many people open the same playground. There are some constraints:");
+      utils.el("<li>Only one person can write, everyone else gets read access</li><li>No data, or authentication is stored on our servers</li>", "ul", loginCreds);
     },
   };
 

@@ -115,7 +115,8 @@ export declare const createTypeScriptSandbox: (partialConfig: Partial<Playground
     getAST: () => Promise<import("typescript").SourceFile>;
     /** The module you get from require("typescript") */
     ts: typeof import("typescript");
-    /** Create a new Program, a TypeScript data model which represents the entire project.
+    /** Create a new Program, a TypeScript data model which represents the entire project. As well as some of the
+     * primitive objects you would normally need to do work with the files.
      *
      * The first time this is called it has to download all the DTS files which is needed for an exact compiler run. Which
      * at max is about 1.5MB - after that subsequent downloads of dts lib files come from localStorage.
@@ -125,6 +126,15 @@ export declare const createTypeScriptSandbox: (partialConfig: Partial<Playground
      * TODO: It would be good to create an easy way to have a single program instance which is updated for you
      * when the monaco model changes.
      */
+    setupTSVFS: () => Promise<{
+        program: import("typescript").Program;
+        system: import("typescript").System;
+        host: {
+            compilerHost: import("typescript").CompilerHost;
+            updateFile: (sourceFile: import("typescript").SourceFile) => boolean;
+        };
+    }>;
+    /** Uses the above call setupTSVFS, but only returns the program */
     createTSProgram: () => Promise<import("typescript").Program>;
     /** The Sandbox's default compiler options  */
     compilerDefaults: import("monaco-editor").languages.typescript.CompilerOptions;

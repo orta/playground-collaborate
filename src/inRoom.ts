@@ -6,13 +6,13 @@ import { HubConnection } from "@aspnet/signalr";
 
 
 export const showRoomStatus = (
-  config: { baseURL: string, room: string, myName: string,  connection: HubConnection, sandbox: Sandbox }, 
+  config: { container: HTMLElement, baseURL: string, room: string, myName: string,  connection: HubConnection, sandbox: Sandbox }, 
   utils: PluginUtils
 ) => {
 
   let userStates = new Map<string, SyncState & { index: number }>()
 
-  const contentContainer = document.createElement("div");
+  const contentContainer = config.container;
   const outer = utils.createDesignSystem(contentContainer);
 
   const shareLink = `${window.location.origin}${window.location.pathname}?join-room=${config.room}&install-plugin=playground-collaborate`
@@ -22,7 +22,6 @@ export const showRoomStatus = (
   contentContainer.appendChild(names)
 
   let decorations: string[] = []
-  let decorationLock = false
 
   const updateUI = () => {
     const ds = utils.createDesignSystem(names);
@@ -69,6 +68,7 @@ export const showRoomStatus = (
     if (iHaveWriteAccess) {
       ds.p("You have write access")
     } else {
+      ds.p("You are in readonly mode")
         const button = document.createElement("input");
         button.type = "button";
         button.value = "Become the author";
@@ -84,8 +84,9 @@ export const showRoomStatus = (
   }
 
   config.connection.on("newMessage", (msg) => {
+    console.log("new message", msg)
     if (!msg.selection) return
-    if (msg.group !== config.room) return
+    if (msg.room !== config.room) return
     
     const index = userStates.get(msg.sender) && userStates.get(msg.sender).index || userStates.size
     msg.index = index
@@ -95,8 +96,6 @@ export const showRoomStatus = (
     removeOldUserStates(userStates)
     updateUI()
   })
-
-  return contentContainer
 }
 
 const removeOldUserStates = (map: Map<string, SyncState>) => {

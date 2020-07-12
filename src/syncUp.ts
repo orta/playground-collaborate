@@ -4,7 +4,9 @@ import { HubConnection } from "@aspnet/signalr";
 // TODO: This needs a timeout somehow
 
 export type SyncState = {
-  group: string,
+  /** This ignores the SignalR rooms completley 
+   */
+  room: string,
   /** User name of who sent it  */
   sender: string,
   /** Monaco selection state */
@@ -34,8 +36,10 @@ export const startSyncing = (config: { baseURL: string, room: string, sender: st
   timer = setInterval(() => {
     try {
       const selection = config.sandbox.editor.getSelection()
+      const  hasWriteAccess = userSyncInfo.lastRequestedWriteAccessTime !== null
+      const textToSend = hasWriteAccess ? config.sandbox.getText() : null
       const body: SyncState = {
-        group: config.room,
+        room: config.room,
         sender: config.sender,
         selection: {
           startLine: selection.startLineNumber,
@@ -44,13 +48,16 @@ export const startSyncing = (config: { baseURL: string, room: string, sender: st
           endCol: selection.endColumn
         },
         lastRequestedWriteAccessTime: userSyncInfo.lastRequestedWriteAccessTime,
-        text: userSyncInfo.lastRequestedWriteAccessTime && config.sandbox.getText(),
+        text: textToSend,
         lastSent: new Date().toISOString()
       }
       
-      if (lastSentResponse === body) return
-      lastSentResponse = body
+      // Don't send dupes
+      const withoutLastSent = {...body, lastSent: undefined }
+      if (JSON.stringify(withoutLastSent) === JSON.stringify(lastSentResponse)) return
+      lastSentResponse = withoutLastSent
 
+      console.log("Sending update")
       fetch(`${config.baseURL}/api/update`, { method: "POST", credentials: "include", body: JSON.stringify(body) }).then(r => {
         if (r.ok) {
           // console.log("Updated", r);

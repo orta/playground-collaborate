@@ -6,9 +6,12 @@ export declare type LocalStorageOption = {
     display: string;
     emptyImpliesEnabled?: true;
     oneline?: true;
+    requireRestart?: true;
+    onchange?: (newValue: boolean) => void;
 };
 export declare type OptionsListConfig = {
     style: "separated" | "rows";
+    requireRestart?: true;
 };
 export declare const createDesignSystem: (sandbox: Sandbox) => (container: Element) => {
     /** Clear the sidebar */
@@ -44,4 +47,15 @@ export declare const createDesignSystem: (sandbox: Sandbox) => (container: Eleme
     }) => HTMLFormElement;
     /** Renders an AST tree */
     createASTTree: (node: Node) => HTMLDivElement;
+    /** Creates an input button */
+    button: (settings: {
+        label: string;
+        onclick?: ((ev: MouseEvent) => void) | undefined;
+    }) => HTMLInputElement;
+    /** Used to re-create a UI like the tab bar at the top of the plugins section */
+    createTabBar: () => HTMLDivElement;
+    /** Used with createTabBar to add buttons */
+    createTabButton: (text: string) => HTMLButtonElement;
+    /** A general "restart your browser" message  */
+    declareRestartRequired: (i?: ((key: string) => string) | undefined) => void;
 };
