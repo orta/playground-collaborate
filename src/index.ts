@@ -94,7 +94,7 @@ const makePlugin = (utils: PluginUtils) => {
 
       container.appendChild(roomContainer)
 
-      loginDS.p("Playground Collaboratre adds support for letting many people open the same playground. There are some constraints:");
+      loginDS.p("Playground Collaborate adds support for letting many people open the same playground. There are some constraints:");
       utils.el("<li>Only one person can write, everyone else gets read access</li><li>No data, or authentication is stored on our servers</li>", "ul", loginCreds);
     },
   };
