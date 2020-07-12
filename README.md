@@ -21,9 +21,7 @@ Then it will show up as a tab in the sidebar.
 ## TODO
 
 - Sync compiler option
-- Use SignalR groups properly (today it sends messages to all users, and users filter things which are interesting)
 - UI polish
-- Safari support seems to be off (access rights/CORs?)
 
 ## Contributing
 
