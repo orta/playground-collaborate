@@ -51,22 +51,14 @@ export const startSyncing = (config: { baseURL: string, room: string, sender: st
         text: textToSend,
         lastSent: new Date().toISOString()
       }
-      
-      // Don't send dupes
-      const withoutLastSent = {...body, lastSent: undefined }
-      if (JSON.stringify(withoutLastSent) === JSON.stringify(lastSentResponse)) return
-      lastSentResponse = withoutLastSent
 
-      console.log("Sending update")
       fetch(`${config.baseURL}/api/update`, { method: "POST", credentials: "include", body: JSON.stringify(body) }).then(r => {
         if (r.ok) {
-          // console.log("Updated", r);
-          // r.text().then(rs => console.log(rs))
+          // NOOP
         } else {
           console.error("Update failed", r)
         }
       })
-        // connection.send("newMessage", "asdasd", "Asdasd")
     } catch (error) {
       console.log("Could not send update", error);
       return undefined;
