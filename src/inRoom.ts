@@ -4,7 +4,6 @@ import { SyncState, userSyncInfo } from "./syncUp";
 import type {editor} from "monaco-editor"
 import { HubConnection } from "@aspnet/signalr";
 
-
 export const showRoomStatus = (
   config: { container: HTMLElement, baseURL: string, room: string, myName: string,  connection: HubConnection, sandbox: Sandbox }, 
   utils: PluginUtils

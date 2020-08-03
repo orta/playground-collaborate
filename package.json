@@ -1,11 +1,15 @@
 {
   "name": "playground-collaborate",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "main": "dist/index.js",
+  "description": "Like LiveShare for the Playground, but no-where near as polished and awesome.",
   "license": "MIT",
   "keywords": [
     "playground-plugin"
   ],
+  "repository": {
+    "url": "https://github.com/orta/playground-collaborate"
+  },
   "scripts": {
     "build": "rollup -c rollup.config.js;",
     "compile": "tsc",
