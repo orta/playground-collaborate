@@ -54,12 +54,8 @@ const makePlugin = (utils: PluginUtils) => {
         id: "collab-username", 
         keepValueAcrossReloads: true,
         placeholder: "Your handle...",
-        onEnter: () => {
-          myName 
-        },
-        onChanged:(text) => {
-          myName = text
-        }
+        onEnter: (text) => myName = text,
+        onChanged:(text) => myName = text
       })
 
       loginDS.subtitle("Room")
@@ -69,18 +65,15 @@ const makePlugin = (utils: PluginUtils) => {
         placeholder: "Room",
         value: room,
         onEnter: () => "",
-        onChanged:(text) => {
-          room = text
-        }
+        onChanged:(text) => room = text
       })
-
 
       const br = document.createElement("br")
       loginCreds.appendChild(br)
 
       const roomContainer = document.createElement("div")
 
-      loginDS.button({ label: "Connect to server ", onclick: (event) => {
+      loginDS.button({ label: "Join room", onclick: (event) => {
         const button = event.target as HTMLButtonElement
         button.disabled = true
         button.textContent = "Connecting..."
@@ -94,8 +87,8 @@ const makePlugin = (utils: PluginUtils) => {
 
       container.appendChild(roomContainer)
 
-      loginDS.p("Playground Collaborate adds support for letting many people open the same playground. There are some constraints:");
-      utils.el("<li>Only one person can write, everyone else gets read access</li><li>No data, or authentication is stored on our servers</li>", "ul", loginCreds);
+      loginDS.p("Playground Collaborate adds support for letting many people open the same playground. The constraint is that there is only one person who can edit at a time, collaborate assumes you are using video/voice chat with another service in order to keep track of who is in charge.");
+      loginDS.p("No data from your playground sessions is stored on our servers, any data is only relayed to the other participants and available in your developer console to see.");
     },
   };
 

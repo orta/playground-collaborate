@@ -14,7 +14,8 @@ export const showRoomStatus = (
   const contentContainer = config.container;
   const outer = utils.createDesignSystem(contentContainer);
 
-  const shareLink = `${window.location.origin}${window.location.pathname}?join-room=${config.room}&install-plugin=playground-collaborate`
+  const existingQuery = window.location.search.length ?  window.location.search : "?share=1"
+  const shareLink = `${window.location.origin}${window.location.pathname}${existingQuery}&join-room=${config.room}&install-plugin=playground-collaborate`
   outer.subtitle(`Room: <code>${config.room}</code> - <a href='${shareLink}'>invite</a>`);
 
   const names = document.createElement("div");
@@ -46,6 +47,7 @@ export const showRoomStatus = (
     // Determine who was the last person to ask for write access
     const lastRequestedAccess = requestedAccess.sort((l, r) => r.lastRequestedWriteAccessTime.localeCompare(l.lastRequestedWriteAccessTime))[0]
     const iHaveWriteAccess = lastRequestedAccess && config.myName === lastRequestedAccess.sender
+    const oldWriteAccess = config.sandbox.editor.getOptions().get(/*EditorOption.readOnly*/ 65)
 
     userStates.forEach(state => {
       const author = lastRequestedAccess &&  state.sender === lastRequestedAccess.sender ? " (author)" : ""
@@ -63,9 +65,15 @@ export const showRoomStatus = (
       config.sandbox.editor.setSelection(oldPos)
     }
 
+    const buttons = ["compiler-options-button", "examples-button", "whatisnew-button"]
+    buttons.forEach(id => document.getElementById(id).style.opacity = iHaveWriteAccess? "1": "0.2");
+
     // Show the state
     if (iHaveWriteAccess) {
       ds.p("You have write access")
+      // If you've just got write access, then focus the editor
+      if (!oldWriteAccess) config.sandbox.editor.focus()
+
     } else {
       ds.p("You are in readonly mode")
         const button = document.createElement("input");
@@ -87,7 +95,8 @@ export const showRoomStatus = (
     if (!msg.selection) return
     if (msg.room !== config.room) return
     
-    const index = userStates.get(msg.sender) && userStates.get(msg.sender).index || userStates.size
+    const index = userStates.get(msg.sender) && userStates.get(msg.sender
+      ).index || userStates.size
     msg.index = index
 
     userStates.set(msg.sender, msg)

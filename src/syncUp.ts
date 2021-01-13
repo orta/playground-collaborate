@@ -4,8 +4,7 @@ import { HubConnection } from "@aspnet/signalr";
 // TODO: This needs a timeout somehow
 
 export type SyncState = {
-  /** This ignores the SignalR rooms completley 
-   */
+  /** This ignores the SignalR rooms completely */
   room: string,
   /** User name of who sent it  */
   sender: string,
@@ -36,7 +35,7 @@ export const startSyncing = (config: { baseURL: string, room: string, sender: st
   timer = setInterval(() => {
     try {
       const selection = config.sandbox.editor.getSelection()
-      const  hasWriteAccess = userSyncInfo.lastRequestedWriteAccessTime !== null
+      const hasWriteAccess = userSyncInfo.lastRequestedWriteAccessTime !== null
       const textToSend = hasWriteAccess ? config.sandbox.getText() : null
       const body: SyncState = {
         room: config.room,

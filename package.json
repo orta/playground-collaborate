@@ -1,11 +1,13 @@
 {
   "name": "playground-collaborate",
-  "version": "2.0.3",
+  "version": "2.1.0",
   "main": "dist/index.js",
-  "description": "Like LiveShare for the Playground, but no-where near as polished and awesome.",
+  "description": "A simple way to live-code in the Playground with others.",
   "license": "MIT",
   "keywords": [
-    "playground-plugin"
+    "playground-plugin",
+    "liveshare",
+    "collaborate"
   ],
   "repository": {
     "url": "https://github.com/orta/playground-collaborate"
